@@ -1,0 +1,56 @@
+1.HttpsURLConnection/HttpURLConnection是通过Socket通信建立连接与交互
+2.HttpURLConnection下面两个方法的作用:
+A.public void setFixedLengthStreamingMode (int contentLength);
+B.public void setChunkedStreamingMode (int chunklen);
+okHttp中的实现类代码如下:
+    ....
+    boolean bufferRequestBody = false;
+    if (HttpMethod.permitsRequestBody(method)) {
+      // Specify how the request body is terminated.
+      if (fixedContentLength != -1) {
+        builder.header("Content-Length", Long.toString(fixedContentLength));
+      } else if (chunkLength > 0) {
+        builder.header("Transfer-Encoding", "chunked");
+      } else {
+        bufferRequestBody = true;
+      }
+
+      // Add a content type for the request body, if one isn't already present.
+      if (headers.get("Content-Type") == null) {
+        builder.header("Content-Type", "application/x-www-form-urlencoded");
+      }
+    }
+    ...
+可以看出，
+I.如果设置了fixedContentLength，则增加http头部"Content-Length".
+II.如果设置了chunkLength，则增加http头部"Transfer-Encoding:chunked"
+III.否则设置变量值为true.
+
+3.X509TrustManager接口方法
+A:checkClientTrusted
+B:checkServerTrusted
+
+conscrypt中的实现代码如下:
+    ...
+    if (getUseClientMode()) {
+        Platform.checkServerTrusted(x509tm, peerCertChain, authMethod, this);
+    } else {
+        String authType = peerCertChain[0].getPublicKey().getAlgorithm();
+        Platform.checkClientTrusted(x509tm, peerCertChain, authType, this);
+    }
+    ...
+是根据getUseClientMode()此方法来调用具体要验证server端还是client端
+I:如果是客户端，则验证checkServerTrusted方法。
+II:如果是服务端，则验证checkClientTrusted方法。
+
+4.Https比Http连接消耗时间长
+运行下面命令
+curl -w "TCP handshake: %{time_connect} ,SSL handshake: %{time_appconnect} \n" -so /dev/null https://www.baidu.com/
+输出为:
+TCP handshake: 0.111 ,SSL handshake: 0.318
+
+
+5.Https双向验证
+参见测试文件HttpsServerTest.java与HttpsClientTest.java
+
+

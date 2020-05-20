@@ -1,0 +1,69 @@
+本文档内容从网址https://www.cnblogs.com/fysola/p/6361181.html复制。
+1. Spring框架简介
+Spring为JavaEE开发提供了一个轻量级的解决方案，主要表现为，
+    (1)IOC（或者叫做DI）的核心机制，提供了bean工厂（Spring容器），降低了业务对象替换的复杂性，提高了组件之间的解耦。
+    (2)AOP的将一些通用任务，如安全、事务、日志等集中进行管理，提高了复用性和管理的便捷性
+    (3)ORM和DAO提供了与第三方持久层框架的良好整合，简化了底层数据访问。
+    (4)提供了优秀的Web MVC框架。
+可以说Spring是贯穿表现层、业务层、持久层，为javaEE提供一站式解决方案的框架。此外，使用Spring还有如下好处，
+    (1)低侵入设计，代码污染极低。
+    (2)基于Spring框架的应用，可以独立于各种应用服务器，实现 write once, run anywhere,
+    (3)Spring可以与第三方框架良好整合（如ORM,DAO等模块与其他框架整合），但同时Spring提供了高度开放性，应用不会被强制依赖Spring，开发者可以自由选择Spring的部分或者全部。
+Spring并不局限于中间层，而是为系统各层都提供了企业级解决方案
+（例如IOC可以使用Spring框架可以带来诸多好处，例如进行数据库事务处理，远程调用，JMS消息处理，JMX操作处理，而这些处理都不需要开发人员直接使用相关API（JDBC， JMX, JMS 等）
+
+2.Sping架构
+Spring框架是分模块存在，除了最核心的Spring Core Container(即Spring容器)是必要模块之外，其他模块都是可选，视需要而定。
+官方文档Spring4.0的架构图中，包含了20多个子模块，大致可以分为四类 1）核心容器（Core Container） 2）数据访问和集成（Data Access/Integration） 3）Web 4）AOP。
+参见图片spring_framework.png
+本质上Spring可以总结为以下七个模块。
+其中常用模块的大致功能如下。
+    (1)核心容器：核心容器提供 Spring 框架的基本功能。核心容器的主要组件是 BeanFactory，它是工厂模式的实现。BeanFactory 使用控制反转 （IOC） 模式将应用程序的配置和依赖性规范与实际的应用程序代码分开。
+    (2)Spring 上下文：Spring 上下文是一个配置文件，向 Spring 框架提供上下文信息。Spring 上下文包括企业服务，例如 JNDI、EJB、电子邮件、国际化、校验和调度功能。
+    (3)Spring AOP：通过配置管理特性，Spring AOP 模块直接将面向切面的编程功能集成到了 Spring 框架中。可以将一些通用任务，如安全、事务、日志等集中进行管理，提高了复用性和管理的便捷性。
+    (4)Spring DAO：为JDBC DAO 抽象层提供了有意义的异常层次结构，可用该结构来管理异常处理和不同数据库供应商抛出的错误消息。异常层次结构简化了错误处理，并且极大地降低了需要编写的异常代码数量（例如打开和关闭连接）。Spring DAO 的面向 JDBC 的异常遵从通用的 DAO 异常层次结构。
+    (5)Spring ORM：Spring 框架插入了若干个 ORM 框架，从而提供了 ORM 的对象关系工具，其中包括 JDO、Hibernate 和 iBatis SQL Map。所有这些都遵从 Spring 的通用事务和 DAO 异常层次结构。
+    (6)Spring Web 模块：Web 上下文模块建立在应用程序上下文模块之上，为基于 Web 的应用程序提供了上下文。所以，Spring 框架支持与 Jakarta Struts 的集成。Web 模块还简化了处理多部分请求以及将请求参数绑定到域对象的工作。
+    (7)Spring MVC 框架：MVC 框架是一个全功能的构建 Web 应用程序的 MVC 实现。通过策略接口，MVC 框架变成为高度可配置的，MVC 容纳了大量视图技术，其中包括 JSP、Velocity、Tiles、iText 和 POI。
+
+3.环境搭建
+3.1.首先需要下载Spring框架 spring-framework-4.0.4.RELEASE-dist，4.0.4版官方地址为 
+http://repo.springsource.org/libs-release-local/org/springframework/spring/4.0.4.RELEASE/
+
+3.2.此外，还需要下载一个必要组件 commons-logging-1.1.3-bin ，
+可以在http://commons.apache.org/官网下载也可以在国内网站下载。
+其他诸如log4j之类的并不是必须下载的。
+
+3.3创建一个目录(sample_code),新建一个libs目录作为user library。
+    (1)将Spring压缩包解压之后，将libs目录下的 *RELEASE.jar（共21个）都拷贝到sample_code/libs目录；
+    (2)将commons包也解压，将根目录的*.1.3.jar（共3个）都拷贝到sample_code/libs目录下。
+
+4.简单demo及控制反转（IOC）和依赖注入（DI）简介
+J2EE提倡面向接口编程，Spring也是针对的接口编程，即在代码中只使用规范（即接口），而将真正的实现类配置在文件中，由Spring的配置文件来决定将会使用哪一个实现类，这也叫做控制反转（IOC）或者依赖注入（DI）。
+现在我们假设有这么一个场景， 我们指定一类人去使用一类斧头，不同的人可以使用不同的斧头，当然其效果不一样。
+按照J2EE的建议，首先我们需要定义“人”和“斧头”两个规范.
+(1).接口类Axe.java,Person.java
+(2).实现类Chinese.java,StoneAxe.java
+(3).测试类Test.java
+(4).配置文件beans.xml
+4.1编译:javac -cp @jar_file_lists.txt Test.java Axe.java StoneAxe.java Person.java Chinese.java
+4.2运行:./test.sh
+4.3结果:
+    我打算去砍点柴火
+    石斧砍柴好慢
+    我打算去砍点柴火
+    石斧砍柴好慢
+5.设值注入和构造注入
+对于依赖注入，有两种方式，一种是设置注入，即上面XML配置文件中设置<property />标签的方式，这种方法本质上是利用反射调用对象的setter方式进行初始化。
+另外，还可以使用构造注入的方式，即在XML配置文件中使用<constructor-arg />标签，不过这种方式要求有对应的构造方法才行。
+对于上面的例子，首先我们要让Chinese类有一个构造方法，
+    public Chinese(Axe axe) {
+         this.axe = axe;
+    }
+接着我们将XML配置文件中的<peroperty>标签用<constructor-arg>标签替换，
+    <bean id="chinese" class="spi.Chinese">
+2         <!--  <property name="axe" ref="stoneAxe" /> -->
+3         <constructor-arg ref="stoneAxe" />
+4   </bean>
+我们将得到一样的结果，只是实现的方式不一样而已。对于设值注入和构造注入两种方式如何选择呢，
+一般的，如果对依赖关系无需变化地注入，尽量采用构造注入。其他依赖关系的注入则考虑采用设值方式注入。

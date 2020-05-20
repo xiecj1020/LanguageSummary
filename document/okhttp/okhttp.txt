@@ -1,0 +1,4 @@
+1.源码网址:
+https://android.googlesource.com/platform/external/okhttp/
+2.代码clone方法
+git clone https://android.googlesource.com/platform/external/okhttp

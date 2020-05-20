@@ -1,0 +1,41 @@
+Executors方法分析:
+1.newFixedThreadPool
+1.1源码
+public static ExecutorService newFixedThreadPool(int nThreads) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                                      0L, TimeUnit.MILLISECONDS,
+                                      new LinkedBlockingQueue<Runnable>());
+}
+1.2分析
+1.2.1核心线程数为nThreads，最大线程数为nThreads
+1.2.2超时时间为0毫秒
+1.2.3阻塞队列，容量为Integer.MAX_VALUE，可以理解为无限大了。
+
+这个方法的意思是该线程池的线程数量保持为nThreads个。
+
+2.newSingleThreadExecutor
+2.1源码
+public static ExecutorService newSingleThreadExecutor() {
+        return new FinalizableDelegatedExecutorService
+            (new ThreadPoolExecutor(1, 1,
+                                    0L, TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue<Runnable>()));
+}
+2.2分析
+此方法相当于newFixedThreadPool中的参数nThreads为1
+
+
+3.newCachedThreadPool
+3.1源码
+public static ExecutorService newCachedThreadPool() {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                      60L, TimeUnit.SECONDS,
+                                      new SynchronousQueue<Runnable>());
+}
+3.2分析
+3.2.1核心线程数为0，最大线程数为Integer.MAX_VALUE
+2.2.2超时时间为60秒
+1.2.3阻塞队列，不能够存储元素。
+
+这个方法的意思是只要有任务来了，如果没有空闲的线程，就会新建一个线程执行任务。
+如果没有任务需要执行，那么60秒后空闲的线程将会结束掉。这个线程池适合短暂及时的任务。

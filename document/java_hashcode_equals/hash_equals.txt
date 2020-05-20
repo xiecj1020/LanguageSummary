@@ -1,0 +1,15 @@
+1.hashCode与equals方法
+这两个方法都定义在Object类中
+    public int hashCode() {
+        return identityHashCode(this);
+    }
+    public boolean equals(Object obj) {
+        return (this == obj);
+    }
+    public String toString() {
+        return getClass().getName() + "@" + Integer.toHexString(hashCode());
+    }
+2.默认的hashCode方法返回的是对象的内存地址
+3.如果两个对象的hashCode方法返回值相同，但是这两个对象的equals方法不一定返回true.
+4.如果两个对象的equals返回true，则两个对象的hashCode方法返回值相同。
+5.如果重写了equals方法，请重写hashCode方法。

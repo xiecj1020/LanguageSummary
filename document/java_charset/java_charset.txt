@@ -1,0 +1,83 @@
+1.Java中的字符串默认编码是Utf-8
+测试代码如下:
+public class Test {
+    public static void main(String[] args){
+        String hello = "ab𝕆";
+        char c = '中';
+    }
+}
+转换后的java字节码如下:
+Classfile /home/user/test/java/Test.class
+  Last modified May 6, 2019; size 282 bytes
+  MD5 checksum 534b23a361836257a60f3f2dfea374fa
+  Compiled from "Test.java"
+public class Test
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#13         // java/lang/Object."<init>":()V
+   #2 = String             #14            // ab𝕆
+   #3 = Class              #15            // Test
+   #4 = Class              #16            // java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Utf8               Code
+   #8 = Utf8               LineNumberTable
+   #9 = Utf8               main
+  #10 = Utf8               ([Ljava/lang/String;)V
+  #11 = Utf8               SourceFile
+  #12 = Utf8               Test.java
+  #13 = NameAndType        #5:#6          // "<init>":()V
+  #14 = Utf8               ab𝕆
+  #15 = Utf8               Test
+  #16 = Utf8               java/lang/Object
+{
+  public Test();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 2: 0
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=1, locals=3, args_size=1
+         0: ldc           #2                  // String ab𝕆
+         2: astore_1
+         3: sipush        20013
+         6: istore_2
+         7: return
+      LineNumberTable:
+        line 4: 0
+        line 5: 3
+        line 6: 7
+}
+SourceFile: "Test.java"
+
+可以看到"ab𝕆"对应的字符编码是utf-8
+#14 = Utf8               ab𝕆
+
+2.char类型的值直接被当做常量存入了栈帧局部变量表。
+
+3."ab𝕆"字符串的length()方法的返回值是4.
+java中char类型是通过UTF-16表达的，能够表达的范围0-65535也就是最多表示65536个字符。
+但是Unicode码不止65536个字符，所以UTF-16是变长字节的(2个字节或者4个字节表示)。
+比如字符'a'，对应的Unicode编码为97,它就只需要一个char类型就可以表示，但是字符'𝕆',它的
+Unicode编码为120134，而java中一个字符表示最大的范围为65535，所以需要2个字符char也就是4个字节来表示。
+在Unicdoe编码中，这两个段[0xD800-0xDBFF][0xDC00-0xDFFF]没有用来对字符编码，所以通过这两个段组合可以来表示超过
+65535的字符。比如字符'𝕆'用这种方式表示，0xD835,0xDD46。其中0xD835,0xDD46被成为代码单元，120134被成为代码点。
+即字符'𝕆'的代码点值为120314，需要使用两个代码点来表示，也就是两个char.
+字符'a'的代码点值为97，只需要使用一个char来表示。
+
+
+
+
+
+

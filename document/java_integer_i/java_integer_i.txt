@@ -1,0 +1,47 @@
+1.Java中Integer类自动装箱与拆箱
+测试代码:
+public class Test {
+    public static void main(String[] args){
+        Integer i = 1000;
+        int i2 = i;
+        System.out.println(i2);
+    }
+}
+Java字节码：
+         0: sipush        1000
+         3: invokestatic  #2                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+         6: astore_1
+         7: aload_1
+         8: invokevirtual #3                  // Method java/lang/Integer.intValue:()I
+        11: istore_2
+        12: getstatic     #4                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        15: iload_2
+        16: invokevirtual #5                  // Method java/io/PrintStream.println:(I)V
+        19: return
+从字节码可以看出:
+1.1自动装箱:java/lang/Integer.valueOf
+2.2自动拆箱:java/lang/Integer.intValue
+
+2.Integer类存在缓存
+    /**
+     * Returns an {@code Integer} instance representing the specified
+     * {@code int} value.  If a new {@code Integer} instance is not
+     * required, this method should generally be used in preference to
+     * the constructor {@link #Integer(int)}, as this method is likely
+     * to yield significantly better space and time performance by
+     * caching frequently requested values.
+     *
+     * This method will always cache values in the range -128 to 127,
+     * inclusive, and may cache other values outside of this range.
+     *
+     * @param  i an {@code int} value.
+     * @return an {@code Integer} instance representing {@code i}.
+     * @since  1.5
+     */
+    public static Integer valueOf(int i) {
+        if (i >= IntegerCache.low && i <= IntegerCache.high)
+            return IntegerCache.cache[i + (-IntegerCache.low)];
+        return new Integer(i);
+    }
+[-128,127]的值会使用同一个缓存.
+
